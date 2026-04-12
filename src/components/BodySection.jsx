@@ -1,34 +1,25 @@
-import { FaHeart, FaRegHeart } from "react-icons/fa6";
-import supabase from "../database/supabase";
-import { useState } from "react";
+import { useContext } from "react";
+import { UserContext } from "../context/user-context";
 
-export default function BodySection( {profile_id, game} ) {
+export default function BodySection({ game }) {
+  const { user, profile } = useContext(UserContext);
+  const ownerId = profile?.id ?? user?.id ?? null;
 
-    const [isFavorite, setIsFavorite] = useState(false);
-    const add_game = async () => {
-       const {data,error} = await supabase
-       .from("favorites")
-       .insert([{profile_id, game_id: game.id, game_name: game.name}])
-       .select();
-       setIsFavorite(true);
-    };
-
+  if (!ownerId) return null;
 
   return (
-    <section className="mt-12">
-      <div className="col-span-5 flex flex-col items-center">
-        <p className="text-white text-xl mb-5">Reviews</p>
+    <section className="relative mx-auto mt-16 max-w-4xl px-4">
+      {/* ── Reviews ── */}
+      <div className="mt-10 flex flex-col items-center gap-4">
+        <span className="rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-[#7dd3fc]">
+          Community
+        </span>
+        <h3 className="font-orbitron text-xl font-bold text-white">Reviews</h3>
         <textarea
-          className="textarea w-1/2"
+          className="w-full max-w-2xl rounded-2xl border border-white/10 bg-[#071121]/60 p-4 text-sm leading-7 text-[#cbd5e1] placeholder-[#475569] backdrop-blur-xl transition focus:border-[#7dd3fc]/40 focus:outline-none focus:ring-1 focus:ring-[#7dd3fc]/20"
+          rows={4}
           placeholder="Inserisci la tua recensione..."
-        ></textarea>
-      </div>
-      <div>
-        {isFavorite ? (
-          <FaHeart className="text-3xl text-red-500 cursor-pointer" onClick={add_game} />
-        ) : (
-          <FaRegHeart className="text-3xl text-red-500 cursor-pointer" onClick={add_game} />
-        )}
+        />
       </div>
     </section>
   );

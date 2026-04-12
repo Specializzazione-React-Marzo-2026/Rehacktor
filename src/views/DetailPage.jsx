@@ -5,12 +5,15 @@ import {
   FaCalendarDays,
   FaGamepad,
   FaGlobe,
+  FaHeart,
+  FaRegHeart,
   FaStar,
 } from "react-icons/fa6";
 
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../context/user-context";
 import BodySection from "../components/BodySection";
+import supabase from "../database/supabase";
 
 
 const fallbackImage =
@@ -61,7 +64,83 @@ function getFilterItems(
 export default function DetailPage() {
   const game = useLoaderData();
   const navigate = useNavigate();
-  const { user } = useContext(UserContext);
+  const { user, profile } = useContext(UserContext);
+  const ownerId = user?.id ?? null;
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favLoading, setFavLoading] = useState(false);
+
+  /* ── check if already favorited ── */
+  useEffect(() => {
+    if (!ownerId || !game?.id) return;
+
+    const check = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("favorites")
+          .select("id")
+          .eq("profile_id", ownerId)
+          .eq("game_id", game.id)
+          .maybeSingle();
+
+        if (error) {
+          console.error("Favorite check error:", error);
+          return;
+        }
+
+        setIsFavorite(!!data);
+      } catch (err) {
+        console.error("Favorite check exception:", err);
+      }
+    };
+
+    void check();
+  }, [ownerId, game?.id]);
+
+  /* ── toggle favorite ── */
+  const toggleFavorite = async () => {
+    if (!ownerId || !game?.id || favLoading) return;
+
+    setFavLoading(true);
+
+    try {
+      if (isFavorite) {
+        const { error } = await supabase
+          .from("favorites")
+          .delete()
+          .eq("profile_id", ownerId)
+          .eq("game_id", game.id);
+
+        if (error) {
+          console.error("Favorite delete error:", error);
+          alert("Errore nella rimozione: " + error.message);
+        } else {
+          setIsFavorite(false);
+        }
+      } else {
+        const { data, error } = await supabase
+          .from("favorites")
+          .insert({
+            profile_id: ownerId,
+            game_id: Number(game.id),
+            game_name: game.name,
+          })
+          .select();
+
+        if (error) {
+          console.error("Favorite insert error:", error);
+          alert("Errore nell'aggiunta: " + error.message);
+        } else {
+          console.log("Favorite inserted:", data);
+          setIsFavorite(true);
+        }
+      }
+    } catch (err) {
+      console.error("Favorite toggle exception:", err);
+      alert("Errore imprevisto: " + err.message);
+    } finally {
+      setFavLoading(false);
+    }
+  };
 
   const heroImage = game?.background_image || fallbackImage;
   const accentImage = game?.background_image_additional || heroImage;
@@ -239,6 +318,24 @@ export default function DetailPage() {
                     <FaArrowUpRightFromSquare className="text-xs" />
                   </a>
                 )}
+                {ownerId && (
+                  <button
+                    onClick={toggleFavorite}
+                    disabled={favLoading}
+                    className="group flex items-center gap-2 rounded-full border border-white/10 bg-[#071121]/80 px-4 py-2 text-sm font-semibold tracking-wide text-[#e2e8f0] backdrop-blur-xl transition-all duration-300 hover:border-red-500/40 hover:shadow-[0_0_20px_rgba(239,68,68,0.15)] disabled:opacity-50"
+                  >
+                    {isFavorite ? (
+                      <FaHeart className="text-base text-red-500 transition-transform duration-300 group-hover:scale-110" />
+                    ) : (
+                      <FaRegHeart className="text-base text-red-400/60 transition-all duration-300 group-hover:scale-110 group-hover:text-red-400" />
+                    )}
+                    {favLoading
+                      ? "..."
+                      : isFavorite
+                        ? "Rimuovi dai preferiti"
+                        : "Aggiungi ai preferiti"}
+                  </button>
+                )}
               </div>
 
               <div className="space-y-4">
@@ -345,7 +442,7 @@ export default function DetailPage() {
           </section>
         </div>
 
-        {profile && <BodySection profile_id={profile.id} game={game} />}                
+        {user && <BodySection game={game} />}                
 
 
 
