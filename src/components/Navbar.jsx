@@ -92,7 +92,7 @@ export default function Navbar() {
         {/* Nav links */}
         <div className="flex items-center gap-5 text-sm font-medium">
           <Link
-            className="text-[#3b82f6] transition-colors hover:text-[#fef08a]"
+            className="navbar-home-link"
             to={routes.home}
           >
             Home
@@ -101,7 +101,7 @@ export default function Navbar() {
           {!user ? (
             <>
               <Link
-                className="text-[#3b82f6] transition-colors hover:text-[#fef08a]"
+                className="navbar-home-link"
                 to={routes.login}
               >
                 Login

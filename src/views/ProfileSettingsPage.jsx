@@ -245,7 +245,6 @@ export default function ProfileSettingsPage() {
             </div>
 
             <div className="profile-upload-copy">
-              <span className="profile-chip">avatar lab</span>
               <h2 className="profile-name">{profile?.username || "Player one"}</h2>
               <p className="profile-subtitle">
                 Carica un&apos;immagine nuova e aggiornala direttamente sul bucket avatars.

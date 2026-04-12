@@ -53,7 +53,21 @@ export async function getFilteredByPublisherGames({ params }) {
 }
 
 export async function getFilteredByPlatformGames({ params }) {
-  return getFilteredGames("platforms", params.id);
+  const byPlatformId = await getFilteredGames("platforms", params.id);
+
+  // Card badges often use RAWG parent platform ids (for example PlayStation = 2),
+  // which are not resolved by `platforms=id`.
+  if (Array.isArray(byPlatformId) && byPlatformId.length > 0) {
+    return byPlatformId;
+  }
+
+  const byParentPlatformId = await getFilteredGames("parent_platforms", params.id);
+
+  if (Array.isArray(byParentPlatformId) && byParentPlatformId.length > 0) {
+    return byParentPlatformId;
+  }
+
+  return getFilteredGames("parent_platforms", params.slug);
 }
 
 export async function getGameDetails({ params }) {

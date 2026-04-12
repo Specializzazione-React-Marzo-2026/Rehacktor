@@ -15,7 +15,6 @@ import { UserContext } from "../context/user-context";
 import BodySection from "../components/BodySection";
 import supabase from "../database/supabase";
 
-
 const fallbackImage =
   "https://placehold.co/1400x900/081120/e2e8f0?text=No+Image";
 
@@ -269,20 +268,6 @@ export default function DetailPage() {
               />
               <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,10,21,0.02)_15%,rgba(5,10,21,0.78)_100%)]" />
 
-              <div className="absolute inset-x-5 top-5 flex items-start justify-between gap-3">
-                <span className="rounded-full border border-white/12 bg-black/35 px-3 py-1 text-[0.64rem] font-semibold uppercase tracking-[0.28em] text-[#e2e8f0] backdrop-blur-md">
-                  {genres[0]?.name || "Featured title"}
-                </span>
-                <div className="flex gap-2">
-                  <span className="rounded-full border border-[#fef08a]/35 bg-[#fef08a]/10 px-3 py-1 text-xs font-semibold text-[#fef08a] backdrop-blur-md">
-                    ★ {game?.metacritic ?? "–"}
-                  </span>
-                  <span className="rounded-full border border-[#38bdf8]/35 bg-[#38bdf8]/10 px-3 py-1 text-xs font-semibold text-[#7dd3fc] backdrop-blur-md">
-                    ♥ {rating}
-                  </span>
-                </div>
-              </div>
-
               <div className="absolute inset-x-5 bottom-5 flex flex-wrap gap-2">
                 {genres.length > 0 ? (
                   genres.slice(0, 3).map((genre) => (
@@ -442,10 +427,7 @@ export default function DetailPage() {
           </section>
         </div>
 
-        {user && <BodySection game={game} />}                
-
-
-
+        {game && <BodySection game={game} />}
       </main>
     </div>
   );

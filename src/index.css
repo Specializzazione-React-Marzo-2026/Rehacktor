@@ -309,3 +309,17 @@ aside .detail-link {
 .btn-glow--no-reflect {
   -webkit-box-reflect: none;
 }
+
+.navbar-home-link {
+  font-family: var(--font-orbitron);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #3b82f6;
+  transition: color 0.25s ease;
+}
+
+.navbar-home-link:hover {
+  color: #fef08a;
+}
