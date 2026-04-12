@@ -1,8 +1,10 @@
 import { Link, useNavigate } from "react-router";
 import routes from "../router/routes";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { UserContext } from "../context/user-context";
-import { FaArrowRightFromBracket, FaUser } from "react-icons/fa6";
+import { FaArrowRightFromBracket } from "react-icons/fa6";
+import supabase from "../database/supabase";
+import Placeholder from "../assets/Portrait_Placeholder.png";
 
 export default function Navbar() {
   const [slug, setSlug] = useState("");
@@ -14,6 +16,31 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   const { user, profile, signOut } = useContext(UserContext);
+
+  const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url ? null : Placeholder);
+
+  useEffect(() => {
+    if (!profile?.avatar_url) {
+      setAvatarUrl(Placeholder);
+      return;
+    }
+
+    if (profile.avatar_url.startsWith("http")) {
+      setAvatarUrl(profile.avatar_url);
+      return;
+    }
+
+    supabase.storage
+      .from("avatars")
+      .createSignedUrl(profile.avatar_url, 3600)
+      .then(({ data, error }) => {
+        if (error || !data?.signedUrl) {
+          setAvatarUrl(Placeholder);
+        } else {
+          setAvatarUrl(data.signedUrl);
+        }
+      });
+  }, [profile?.avatar_url]);
 
   const handleLogout = async () => {
     await signOut();
@@ -80,7 +107,7 @@ export default function Navbar() {
                 Login
               </Link>
               <Link
-                className="rounded-full bg-[#fef08a]/10 px-4 py-1.5 text-[#fef08a] ring-1 ring-[#fef08a]/30 transition-all hover:bg-[#fef08a]/20 hover:ring-[#fef08a]/50"
+                className="btn-glow btn-glow--yellow"
                 to={routes.register}
               >
                 Register
@@ -91,14 +118,19 @@ export default function Navbar() {
              <Link to ={routes.profile} className="flex items-center gap-1.5 ">
               {profile?.username && (
                 <span className="flex items-center gap-1.5 Profile-navbar-custom-link">
-                  <FaUser className="text-[#94a3b8]/70" />
+                  <img
+                    src={avatarUrl}
+                    alt="Avatar"
+                    className="h-6 w-6 rounded-full object-cover ring-1 ring-[#fef08a]/30"
+                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = Placeholder; }}
+                  />
                   {profile.username}
                 </span>
               )}
                </Link>
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-1.5 rounded-full bg-red-500/10 px-4 py-1.5 text-red-400 ring-1 ring-red-500/30 transition-all hover:bg-red-500/20 hover:text-red-300 hover:ring-red-500/50"
+                className="btn-glow btn-glow--danger btn-glow--no-reflect"
               >
                 <FaArrowRightFromBracket className="text-xs" />
                 Logout

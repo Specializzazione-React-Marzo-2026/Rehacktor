@@ -1,4 +1,4 @@
-import { FaGlobe, FaInstagram, FaTwitch } from "react-icons/fa6";
+import { FaGlobe, FaInstagram, FaTwitch, FaYoutube } from "react-icons/fa6";
 import "./Footer.css";
 
 export default function Footer() {
@@ -27,20 +27,28 @@ export default function Footer() {
             <FaGlobe />
           </a>
           <a
-            href="https://www.instagram.com/playstationit/"
+            href="https://www.instagram.com/everyeyeit/"
             target="_blank"
             rel="noreferrer"
-            aria-label="Instagram gaming"
+            aria-label="Everyeye Instagram"
           >
             <FaInstagram />
           </a>
           <a
-            href="https://www.twitch.tv/directory/category/games"
+            href="https://www.twitch.tv/everyeye"
             target="_blank"
             rel="noreferrer"
-            aria-label="Twitch gaming"
+            aria-label="Everyeye Twitch"
           >
             <FaTwitch />
+          </a>
+          <a
+            href="https://www.youtube.com/@Everyeye"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Everyeye YouTube"
+          >
+            <FaYoutube />
           </a>
         </div>
       </div>

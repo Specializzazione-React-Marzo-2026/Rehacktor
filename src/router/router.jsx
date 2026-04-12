@@ -1,5 +1,14 @@
 import { createBrowserRouter } from "react-router";
-import { getAllGenres, getAllGamesLoader, getSearchedGames,getFilteredbyGenreGames } from "./loader";
+import {
+  getAllGenres,
+  getAllGamesLoader,
+  getSearchedGames,
+  getFilteredbyGenreGames,
+  getFilteredByDeveloperGames,
+  getFilteredByPublisherGames,
+  getFilteredByPlatformGames,
+  getGameDetails,
+} from "./loader";
 import Layout from "../layouts/Layout";
 import AuthLayout from "../layouts/AuthLayout";
 import Homepage from "../views/Homepage";
@@ -10,6 +19,7 @@ import ProfilePage from "../views/ProfilePage";
 import routes from "./routes";
 import Searchpage from "../views/Searchpage";
 import ProfileSettingsPage from "../views/ProfileSettingsPage";
+import DetailPage from "../views/DetailPage";
 
 const router = createBrowserRouter([
   {
@@ -47,31 +57,65 @@ const router = createBrowserRouter([
           </div>
         ),
       },
+      {
+        path: routes.developer,
+        Component: Searchpage,
+        loader: getFilteredByDeveloperGames,
+        hydrateFallbackElement: (
+          <div className=" loading_page ">
+            <div className="loading_spinner"></div>
+          </div>
+        ),
+      },
+      {
+        path: routes.publisher,
+        Component: Searchpage,
+        loader: getFilteredByPublisherGames,
+        hydrateFallbackElement: (
+          <div className=" loading_page ">
+            <div className="loading_spinner"></div>
+          </div>
+        ),
+      },
+      {
+        path: routes.platform,
+        Component: Searchpage,
+        loader: getFilteredByPlatformGames,
+        hydrateFallbackElement: (
+          <div className=" loading_page ">
+            <div className="loading_spinner"></div>
+          </div>
+        ),
+      },
     ],
   },
   {
-    path: '/auth',
-    Component : AuthLayout,
-      children:[
-        {
-          path: routes.login,
-          Component: Login,
-        },
-        {
-          path: routes.register,
-          Component: Register,
-        },
-        {
-          path: routes.profile,
-          Component: ProfilePage,
-        },
-          {
-            path: routes.profile_settings,
-            Component: ProfileSettingsPage,
-          }
-        
-      ]
-  }
+    path: "/auth",
+    Component: AuthLayout,
+    children: [
+      {
+        path: routes.login,
+        Component: Login,
+      },
+      {
+        path: routes.register,
+        Component: Register,
+      },
+      {
+        path: routes.profile,
+        Component: ProfilePage,
+      },
+      {
+        path: routes.profile_settings,
+        Component: ProfileSettingsPage,
+      },
+    ],
+  },
+  {
+    path: routes.detail,
+    Component: DetailPage,
+    loader: getGameDetails,
+  },
 ]);
 
 export default router;

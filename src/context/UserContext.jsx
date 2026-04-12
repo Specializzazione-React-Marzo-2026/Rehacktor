@@ -98,8 +98,36 @@ export function UserContextProvider({ children }) {
     return { data };
   };
 
+  const updateProfile = async (newProfile) => {
+    if (!user) {
+      return { error: new Error("No authenticated user") };
+    }
+
+    const nextProfile = {
+      ...(profile ?? {}),
+      ...newProfile,
+      id: user.id,
+    };
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .upsert(nextProfile)
+      .select()
+      .maybeSingle();
+
+    if (error) {
+      console.error("Profile update error:", error.message);
+      return { error };
+    }
+
+    setProfile(data ?? nextProfile);
+    return { data: data ?? nextProfile };
+  };
+
   return (
-    <UserContext.Provider value={{ user, profile, signOut, signUp, login }}>
+    <UserContext.Provider
+      value={{ user, profile, signOut, signUp, login, updateProfile }}
+    >
       {children}
     </UserContext.Provider>
   );

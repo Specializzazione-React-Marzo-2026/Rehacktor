@@ -1,44 +1,56 @@
+import { Link } from "react-router";
+
+const fallbackImage = "https://placehold.co/600x900/081120/e2e8f0?text=No+Image";
+
 export default function Gamecard({ game }) {
-    const releasedDate = game?.released
-        ? new Date(game.released).toLocaleDateString("it-IT", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-            })
-        : "Data non disponibile";
+    const rating = typeof game?.rating === "number" ? game.rating.toFixed(1) : "–";
+    const platformNames = (game?.parent_platforms ?? game?.platforms ?? [])
+        .map((entry) => entry.platform?.name ?? entry.name)
+        .filter(Boolean)
+        .slice(0, 3);
 
     return (
-        <article className="group relative overflow-hidden rounded-2xl bg-[#0d1b35] transition-transform duration-300 hover:-translate-y-1.5">
-            {/* Glow border */}
-            <div className="pointer-events-none absolute inset-0 z-30 rounded-2xl ring-1 ring-inset ring-white/10 transition duration-300 group-hover:ring-[#facc15]/40 group-hover:shadow-[0_8px_30px_rgba(254,240,138,0.15)]" />
-
-            {/* Image */}
-            <div className="relative h-52 w-full overflow-hidden bg-[#0d1b35]">
+        <article className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-[#0a1628]  transition duration-300 hover:-translate-y-1 hover:border-[#fef08a]/25 hover:shadow-[0_16px_48px_rgba(254,240,138,0.08)]">
+            <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#081120]">
                 <img
-                    src={game?.background_image || "https://placehold.co/600x400/0f172a/e2e8f0?text=No+Image"}
+                    src={game?.background_image || fallbackImage}
                     alt={game?.name || "Game cover"}
-                    className="block h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0a1628] via-[#0a1628]/40 to-transparent" />
 
-                {/* Badges */}
-                <div className="absolute bottom-3 left-3 z-20 flex gap-2 ">
-                    <span className="metascore_badge_custom">
+                {/* Piattaforme — alto a sinistra */}
+                {platformNames.length > 0 && (
+                    <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
+                        {platformNames.map((name) => (
+                            <span
+                                key={name}
+                                className="rounded-full bg-black/50 px-2.5 py-1 text-[0.6rem] font-semibold uppercase tracking-wider text-white/80 backdrop-blur-sm"
+                            >
+                                {name}
+                            </span>
+                        ))}
+                    </div>
+                )}
+
+                {/* Badge rating + metacritic — alto a destra */}
+                <div className="absolute right-3 top-3 flex gap-1.5">
+                    <span className="rounded-full bg-black/50 px-2.5 py-1 text-[0.65rem] font-bold text-[#fef08a] backdrop-blur-sm">
                         ★ {game?.metacritic ?? "–"}
                     </span>
-                    <span className="rating_badge_custom">
-                        ♥ {game?.rating ?? "–"}
+                    <span className="rounded-full bg-black/50 px-2.5 py-1 text-[0.65rem] font-bold text-[#7dd3fc] backdrop-blur-sm">
+                        ♥ {rating}
                     </span>
                 </div>
-            </div>
 
-            <div className="relative z-20 space-y-3 p-4">
-                <h2 className="line-clamp-2 min-h-[3rem] text-base font-bold leading-snug text-white transition-colors duration-200 group-hover:text-[#fef08a]">
-                    {game?.name || "Titolo sconosciuto"}
-                </h2>
-
-                <div className="flex items-center justify-between border-t border-[#fef08a]/[0.08] pt-3 text-xs text-[#94a3b8]">
-                    <span className="uppercase tracking-wider">Uscita</span>
-                    <span className="font-medium text-[#94a3b8]">{releasedDate}</span>
+                {/* Titolo — sovrapposto in basso sull'immagine */}
+                <div className="absolute inset-x-0 bottom-0 p-4">
+                    <Link
+                        to={`/detail/${game?.id}`}
+                        className="line-clamp-2 text-base font-bold leading-snug text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] transition-colors duration-200 cursor-pointer hover:text-[#fef08a]"
+                    >
+                        {game?.name || "Titolo sconosciuto"}
+                    </Link>
                 </div>
             </div>
         </article>
